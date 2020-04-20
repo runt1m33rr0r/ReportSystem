@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ReportSystem.Data;
+using ReportSystem.Data.Repositories;
+using ReportSystem.Data.Repositories.Contracts;
+using ReportSystem.Data.SaveContext;
+using ReportSystem.Data.SaveContext.Contracts;
+using ReportSystem.Services;
+using ReportSystem.Services.Contracts;
 
 namespace ReportSystem
 {
@@ -23,7 +32,17 @@ namespace ReportSystem
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ReportSystemContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("ReportSystemContext")));
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ReportSystemContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddRazorPages();
+
+            services.AddTransient(typeof(IEfRepository<>), typeof(EfRepository<>));
+            services.AddTransient<ISaveContext, SaveContext>();
+
+            services.AddTransient<IReportsService, ReportsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,6 +51,7 @@ namespace ReportSystem
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -44,6 +64,7 @@ namespace ReportSystem
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -51,6 +72,7 @@ namespace ReportSystem
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }
