@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,10 +12,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReportSystem.Data;
+using ReportSystem.Data.Models;
 using ReportSystem.Data.Repositories;
 using ReportSystem.Data.Repositories.Contracts;
 using ReportSystem.Data.SaveContext;
 using ReportSystem.Data.SaveContext.Contracts;
+using ReportSystem.Models;
 using ReportSystem.Services;
 using ReportSystem.Services.Contracts;
 
@@ -38,6 +41,15 @@ namespace ReportSystem
                 .AddEntityFrameworkStores<ReportSystemContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
+
+            MapperConfiguration mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Report, ReportViewModel>();
+                cfg.CreateMap<ReportViewModel, Report>();
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(typeof(IMapper), mapper);
 
             services.Configure<IdentityOptions>(options =>
             {
