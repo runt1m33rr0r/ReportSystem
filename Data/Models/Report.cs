@@ -9,6 +9,7 @@ namespace ReportSystem.Data.Models
 
     public class Report : BaseEntity
     {
+        public string Title { get; set; }
         public string Description { get; set; }
         public string Resolution { get; set; }
         public ReportStatus Status { get; set; }

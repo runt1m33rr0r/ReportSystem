@@ -1,0 +1,59 @@
+@model ReportListViewModel
+@using ReportSystem.Data.Models;
+
+@{
+    ViewData["Title"] = "Reports list";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+<div class="accordion" id="accordionExample">
+    @foreach (ReportViewModel report in Model.Reports)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target=@($"#item{report.ID}")>
+                        @report.CreationDate @report.Title
+                    </button>
+                    @if (report.Status == ReportStatus.OPEN)
+                    {
+                        <span class="badge badge-pill badge-primary">Open</span>
+                    }
+                    else if (report.Status == ReportStatus.RESOLVED)
+                    {
+                        <span class="badge badge-pill badge-success">Resolved</span>
+                    }
+                    else if (report.Status == ReportStatus.REFUSED)
+                    {
+                        <span class="badge badge-pill badge-danger">Refused</span>
+                    }
+                </h2>
+            </div>
+            <div id=@($"item{report.ID}") class="collapse" data-parent="#accordionExample">
+                <div class="card-body">
+                    @report.Description
+
+                    @if (report.Status != ReportStatus.RESOLVED)
+                    {
+                        @Html.Partial("_ReportStatusPartial", new ReportStatusViewModel()
+                        {
+                            ID = report.ID,
+                            Status = ReportStatus.RESOLVED,
+                            Resolution = report.Resolution
+                        });
+                    }
+                    
+                    @if (report.Status != ReportStatus.REFUSED)
+                    {
+                        @Html.Partial("_ReportStatusPartial", new ReportStatusViewModel()
+                        {
+                            ID = report.ID,
+                            Status = ReportStatus.REFUSED,
+                            Resolution = report.Resolution
+                        });
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
