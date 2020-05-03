@@ -35,7 +35,7 @@
 
                     @if (report.Status != ReportStatus.RESOLVED)
                     {
-                        @Html.Partial("_ReportStatusPartial", new ReportStatusViewModel()
+                        @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel()
                         {
                             ID = report.ID,
                             Status = ReportStatus.RESOLVED,
@@ -45,7 +45,7 @@
                     
                     @if (report.Status != ReportStatus.REFUSED)
                     {
-                        @Html.Partial("_ReportStatusPartial", new ReportStatusViewModel()
+                        @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel()
                         {
                             ID = report.ID,
                             Status = ReportStatus.REFUSED,

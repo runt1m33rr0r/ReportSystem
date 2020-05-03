@@ -37,7 +37,9 @@ namespace ReportSystem
         {
             services.AddDbContext<ReportSystemContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("ReportSystemContext")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services
+                .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ReportSystemContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
@@ -53,7 +55,6 @@ namespace ReportSystem
 
             services.Configure<IdentityOptions>(options =>
             {
-                // Password settings.
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -61,7 +62,6 @@ namespace ReportSystem
                 options.Password.RequiredLength = 3;
                 options.Password.RequiredUniqueChars = 0;
 
-                // Lockout settings.
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
@@ -69,12 +69,15 @@ namespace ReportSystem
                 options.SignIn.RequireConfirmedAccount = false;
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
+
+                options.User.RequireUniqueEmail = true;
             });
 
             services.AddTransient(typeof(IEfRepository<>), typeof(EfRepository<>));
             services.AddTransient<ISaveContext, SaveContext>();
 
             services.AddTransient<IReportsService, ReportsService>();
+            services.AddTransient<IAuthService, AuthService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
