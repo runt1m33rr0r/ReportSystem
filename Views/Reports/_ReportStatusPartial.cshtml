@@ -2,6 +2,15 @@
 @using ReportSystem.Data.Models;
 
 <form class="mt-3" method="POST" asp-controller="Reports" asp-action="SetReportStatus">
+    @if (Model.Status == ReportStatus.REFUSED)
+    {
+        Model.Status = ReportStatus.RESOLVED;
+    }
+    else if (Model.Status == ReportStatus.RESOLVED)
+    {
+        Model.Status = ReportStatus.REFUSED;
+    }
+
     <input type="hidden" asp-for=@Model.ID value=@Model.ID />
     <input type="hidden" asp-for=@Model.Status value=@Model.Status />
 

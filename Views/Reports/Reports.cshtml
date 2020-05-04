@@ -5,7 +5,15 @@
     ViewData["Title"] = "Reports list";
 }
 
-<h1 class="text-center">@ViewData["Title"]</h1>
+@if (Model.Reports.Count == 0)
+{
+    <h1 class="text-center">There are no reports!</h1>
+}
+else
+{
+    <h1 class="text-center">@ViewData["Title"]</h1>
+}
+
 <div class="accordion" id="accordionExample">
     @foreach (ReportViewModel report in Model.Reports)
     {
@@ -33,25 +41,12 @@
                 <div class="card-body">
                     @report.Description
 
-                    @if (report.Status != ReportStatus.RESOLVED)
+                    @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel()
                     {
-                        @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel()
-                        {
-                            ID = report.ID,
-                            Status = ReportStatus.RESOLVED,
-                            Resolution = report.Resolution
-                        });
-                    }
-                    
-                    @if (report.Status != ReportStatus.REFUSED)
-                    {
-                        @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel()
-                        {
-                            ID = report.ID,
-                            Status = ReportStatus.REFUSED,
-                            Resolution = report.Resolution
-                        });
-                    }
+                        ID = report.ID,
+                        Status = report.Status,
+                        Resolution = report.Resolution
+                    })
                 </div>
             </div>
         </div>
