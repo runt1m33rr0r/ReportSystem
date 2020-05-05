@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using ReportSystem.Data.Models;
 using ReportSystem.Models;
 using ReportSystem.Services.Contracts;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace ReportSystem.Controllers
 {
@@ -13,11 +15,16 @@ namespace ReportSystem.Controllers
     {
         private readonly IReportsService reportsService;
         private readonly IMapper mapper;
+        private readonly UserManager<IdentityUser> userManager;
 
-        public ReportsController(IReportsService reportsService, IMapper mapper)
+        public ReportsController(
+            IReportsService reportsService,
+            IMapper mapper,
+            UserManager<IdentityUser> userManager)
         {
             this.reportsService = reportsService;
             this.mapper = mapper;
+            this.userManager = userManager;
         }
 
         public IActionResult Report()
@@ -41,7 +48,7 @@ namespace ReportSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult Report(ReportViewModel report)
+        public async Task<IActionResult> Report(ReportViewModel report)
         {
             if (!ModelState.IsValid)
             {
@@ -53,6 +60,7 @@ namespace ReportSystem.Controllers
             Report reportEntity = this.mapper.Map<Report>(report);
             reportEntity.CreationDate = DateTime.Now;
             reportEntity.Status = ReportStatus.OPEN;
+            reportEntity.Author = await this.userManager.GetUserAsync(User);
             this.reportsService.CreateReport(reportEntity);
 
             ViewData["Success"] = "Report created!";

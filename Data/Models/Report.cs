@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace ReportSystem.Data.Models
 {
@@ -14,5 +16,6 @@ namespace ReportSystem.Data.Models
         public string Resolution { get; set; }
         public ReportStatus Status { get; set; }
         public DateTime CreationDate { get; set; }
+        public IdentityUser Author { get; set; }
     }
 }

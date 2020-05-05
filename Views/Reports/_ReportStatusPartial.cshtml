@@ -2,17 +2,7 @@
 @using ReportSystem.Data.Models;
 
 <form class="mt-3" method="POST" asp-controller="Reports" asp-action="SetReportStatus">
-    @if (Model.Status == ReportStatus.REFUSED)
-    {
-        Model.Status = ReportStatus.RESOLVED;
-    }
-    else if (Model.Status == ReportStatus.RESOLVED)
-    {
-        Model.Status = ReportStatus.REFUSED;
-    }
-
     <input type="hidden" asp-for=@Model.ID value=@Model.ID />
-    <input type="hidden" asp-for=@Model.Status value=@Model.Status />
 
     <div class="form-group">
         <label asp-for="Resolution"></label>
@@ -20,12 +10,14 @@
         <span asp-validation-for=@Model.Resolution class="text-danger"></span>
     </div>
 
-    @if (Model.Status == ReportStatus.RESOLVED)
+    @if (Model.Status == ReportStatus.REFUSED)
     {
+        <input type="hidden" asp-for=@Model.Status value=@ReportStatus.RESOLVED />
         <button type="submit" class="btn btn-success">Resolve</button>
     }
-    else if (Model.Status == ReportStatus.REFUSED)
+    else if (Model.Status == ReportStatus.RESOLVED)
     {
+        <input type="hidden" asp-for=@Model.Status value=@ReportStatus.REFUSED />
         <button type="submit" class="btn btn-danger">Refuse</button>
     }
 </form>

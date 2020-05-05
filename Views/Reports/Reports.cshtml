@@ -21,7 +21,7 @@ else
             <div class="card-header">
                 <h2 class="mb-0">
                     <button class="btn btn-link" type="button" data-toggle="collapse" data-target=@($"#item{report.ID}")>
-                        @report.CreationDate @report.Title
+                        @report.CreationDate @report.Title reported by @report.Author.UserName
                     </button>
                     @if (report.Status == ReportStatus.OPEN)
                     {

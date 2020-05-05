@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ReportSystem.Data.Models;
 using ReportSystem.Data.Repositories.Contracts;
 using ReportSystem.Data.SaveContext.Contracts;
@@ -26,7 +27,7 @@ namespace ReportSystem.Services
 
         public IQueryable<Report> GetAll()
         {
-            return this.repository.All;
+            return this.repository.All.Include(r => r.Author);
         }
 
         public void SetReportStatus(int Id, ReportStatus status, string resolution)
