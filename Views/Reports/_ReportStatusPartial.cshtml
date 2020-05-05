@@ -21,14 +21,30 @@
         <span asp-validation-for=@Model.Resolution class="text-danger"></span>
     </div>
 
-    @if (Model.Status != ReportStatus.REFUSED)
-    {
-        <input type="hidden" asp-for=@Model.Status value=@ReportStatus.RESOLVED />
-        <button type="submit" class="btn btn-success">Resolve</button>
-    }
-    else if (Model.Status != ReportStatus.RESOLVED)
-    {
-        <input type="hidden" asp-for=@Model.Status value=@ReportStatus.REFUSED />
-        <button type="submit" class="btn btn-danger">Refuse</button>
-    }
+    <div class="form-group">
+        <label asp-for=@Model.Status>State</label>
+        <select class="form-control" asp-for=@Model.Status value=@Model.Status>
+            @if (Model.Status != ReportStatus.OPEN)
+            {
+                <option value=@ReportStatus.OPEN>Open</option>
+            }
+
+            @if (Model.Status != ReportStatus.IN_PROGRESS)
+            {
+                <option value=@ReportStatus.IN_PROGRESS>In progress</option>
+            }
+
+            @if (Model.Status != ReportStatus.RESOLVED)
+            {
+                <option value=@ReportStatus.RESOLVED>Resolved</option>
+            }
+
+            @if (Model.Status != ReportStatus.REFUSED)
+            {
+                <option value=@ReportStatus.REFUSED>Refused</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
