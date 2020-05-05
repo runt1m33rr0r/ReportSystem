@@ -1,12 +1,11 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
 namespace ReportSystem.Data.Models
 {
     public enum ReportStatus
     {
-        OPEN, RESOLVED, REFUSED
+        OPEN, IN_PROGRESS, RESOLVED, REFUSED
     }
 
     public class Report : BaseEntity
@@ -17,5 +16,6 @@ namespace ReportSystem.Data.Models
         public ReportStatus Status { get; set; }
         public DateTime CreationDate { get; set; }
         public IdentityUser Author { get; set; }
+        public byte[] Photo { get; set; }
     }
 }

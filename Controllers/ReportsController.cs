@@ -8,6 +8,8 @@ using ReportSystem.Models;
 using ReportSystem.Services.Contracts;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace ReportSystem.Controllers
 {
@@ -25,6 +27,28 @@ namespace ReportSystem.Controllers
             this.reportsService = reportsService;
             this.mapper = mapper;
             this.userManager = userManager;
+        }
+
+        private bool IsFileExtensionValid(IFormFile file)
+        {
+            string[] permittedExtensions = { ".jpg", ".jpeg", ".png" };
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool IsPhotoSizeValid(IFormFile file)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                file.CopyTo(memoryStream);
+
+                return memoryStream.Length < 5242880;
+            }
         }
 
         public IActionResult Report()
@@ -58,6 +82,29 @@ namespace ReportSystem.Controllers
             }
 
             Report reportEntity = this.mapper.Map<Report>(report);
+            if (report.PhotoFile != null)
+            {
+                if (!this.IsFileExtensionValid(report.PhotoFile))
+                {
+                    ViewData["Error"] = "Invalid photo file extension!";
+
+                    return View();
+                }
+
+                if (!this.IsPhotoSizeValid(report.PhotoFile))
+                {
+                    ViewData["Error"] = "Photo size is too large! Maximum photo size is 5MB!";
+
+                    return View();
+                }
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    report.PhotoFile.CopyTo(memoryStream);
+                    reportEntity.Photo = memoryStream.ToArray();
+                }
+            }
+
             reportEntity.CreationDate = DateTime.Now;
             reportEntity.Status = ReportStatus.OPEN;
             reportEntity.Author = await this.userManager.GetUserAsync(User);

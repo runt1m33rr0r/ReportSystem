@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using ReportSystem.Data.Models;
 
@@ -20,5 +21,9 @@ namespace ReportSystem.Models
         public ReportStatus Status { get; set; }
         public DateTime CreationDate { get; set; }
         public IdentityUser Author { get; set; }
+
+        [Display(Name = "Photo")]
+        public IFormFile PhotoFile { get; set; }
+        public byte[] Photo { get; set; }
     }
 }
