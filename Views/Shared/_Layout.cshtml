@@ -18,17 +18,36 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
+                        @{
+                            string GetActive(string route)
+                            {
+                                var values = ViewContext.RouteData.Values;
+                                if (values["Action"] == null)
+                                {
+                                    return "";
+                                }
+
+                                bool shouldBeActive = values["Action"].ToString() == route;
+                                if (shouldBeActive)
+                                {
+                                    return "active";
+                                }
+
+                                return "";
+                            }
+                        }
+
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link @GetActive("Index")" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Employees" asp-action="CreateEmployee">Create an employee</a>
+                            <a class="nav-link @GetActive("CreateEmployee")" asp-controller="Employees" asp-action="CreateEmployee">Create an employee</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Reports" asp-action="Report">Create a report</a>
+                            <a class="nav-link @GetActive("Report")" asp-controller="Reports" asp-action="Report">Create a report</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Reports" asp-action="Reports">Reports</a>
+                            <a class="nav-link @GetActive("Reports")" asp-controller="Reports" asp-action="Reports">Reports</a>
                         </li>
                     </ul>
                 </div>
