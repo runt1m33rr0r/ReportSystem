@@ -21,18 +21,29 @@ namespace ReportSystem
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
+            this.env = env;
         }
 
         public IConfiguration Configuration { get; }
+        private readonly IWebHostEnvironment env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ReportSystemContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("ReportSystemContext")));
+            if (this.env.IsDevelopment())
+            {
+                services.AddDbContext<ReportSystemContext>(options =>
+                    options.UseSqlite(Configuration.GetConnectionString("ReportSystemContext")));
+            }
+            else
+            {
+                string connectionString = System.Environment.GetEnvironmentVariable("CONNECTION_STRING");
+                services.AddDbContext<ReportSystemContext>(options => options.UseSqlServer(connectionString));
+            }
+
             services
                 .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
