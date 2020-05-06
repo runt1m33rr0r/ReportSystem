@@ -14,7 +14,7 @@ else
     <h1 class="text-center">@ViewData["Title"]</h1>
 }
 
-<div class="accordion" id="accordionExample">
+<div class="accordion mt-3" id="accordionExample">
     @foreach (ReportViewModel report in Model.Reports)
     {
         <div class="card">
@@ -57,3 +57,30 @@ else
         </div>
     }
 </div>
+
+@{
+    var prevDisabled = !Model.Reports.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Reports.HasNextPage ? "disabled" : "";
+}
+<nav class="mt-3">
+    <ul class="pagination">
+        <li class="page-item @prevDisabled">
+            <a 
+                class="page-link" 
+                asp-route-page="@(Model.Reports.PageIndex - 1)"
+                asp-controller="Reports"
+                asp-action="Reports">
+                Previous
+            </a>
+        </li>
+        <li class="page-item @nextDisabled">
+            <a 
+                class="page-link" 
+                asp-route-page="@(Model.Reports.PageIndex + 1)"
+                asp-controller="Reports"
+                asp-action="Reports">
+                Next
+            </a>
+        </li>
+    </ul>
+</nav>

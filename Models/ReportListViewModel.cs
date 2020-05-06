@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+using ReportSystem.Utils;
 
 namespace ReportSystem.Models
 {
     public class ReportListViewModel
     {
-        public ICollection<ReportViewModel> Reports { get; set; }
+        public PaginatedList<ReportViewModel> Reports { get; set; }
     }
 }

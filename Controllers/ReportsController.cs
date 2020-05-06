@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReportSystem.Data.Models;
 using ReportSystem.Models;
 using ReportSystem.Services.Contracts;
+using ReportSystem.Utils;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using System.IO;
@@ -56,16 +57,19 @@ namespace ReportSystem.Controllers
             return View();
         }
 
-        public IActionResult Reports()
+        public async Task<IActionResult> Reports(int? page)
         {
-            ICollection<ReportViewModel> reports = this.reportsService
+            IQueryable<ReportViewModel> reports = this.reportsService
                 .GetAll()
-                .Select(x => this.mapper.Map<ReportViewModel>(x))
-                .ToList();
-
+                .Select(x => this.mapper.Map<ReportViewModel>(x));
+            int pageSize = 5;
+            var pagedReports = await PaginatedList<ReportViewModel>.CreateAsync(
+                reports,
+                page ?? 1,
+                pageSize);
             ReportListViewModel viewModel = new ReportListViewModel()
             {
-                Reports = reports
+                Reports = pagedReports
             };
 
             return View("Reports", viewModel);
@@ -116,13 +120,13 @@ namespace ReportSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult SetReportStatus(ReportStatusViewModel reportStatus)
+        public async Task<IActionResult> SetReportStatus(ReportStatusViewModel reportStatus)
         {
             if (!ModelState.IsValid)
             {
                 ViewData["Error"] = "Invalid report status!";
 
-                return this.Reports();
+                return await this.Reports(reportStatus.Page);
             }
 
             try
@@ -136,12 +140,12 @@ namespace ReportSystem.Controllers
             {
                 ViewData["Error"] = ex.Message;
 
-                return this.Reports();
+                return await this.Reports(reportStatus.Page);
             }
 
             ViewData["Success"] = "Report updated!";
 
-            return this.Reports();
+            return await this.Reports(reportStatus.Page);
         }
     }
 }
