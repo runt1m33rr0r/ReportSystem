@@ -8,5 +8,6 @@ namespace ReportSystem.Models
         public string Sort { get; set; }
         public string Search { get; set; }
         public string Status { get; set; }
+        public bool Personal { get; set; } = false;
     }
 }

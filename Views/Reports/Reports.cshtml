@@ -4,12 +4,9 @@
 @{
     ViewData["Title"] = "Reports list";
 
-    async Task SelectedOption(string optionTitle, string queryOptionName, string checkOptionValue)
+    async Task SelectedOption(string optionTitle, string checkOptionValue, string modelValue)
     {
-        string optionValue = Context.Request.Query[queryOptionName];
-        optionValue = optionValue == null ? "" : optionValue;
-
-        if (optionValue == checkOptionValue)
+        if (modelValue == checkOptionValue)
         {
             <option value="@checkOptionValue" selected="selected">@optionTitle</option>
         }
@@ -39,24 +36,24 @@ else
                 type="text" 
                 placeholder="Search criteria" 
                 name="search"
-                value="@Context.Request.Query["search"]">
+                value="@Model.Search">
         </div>
         <div class="form-group col-sm">
-            <select class="form-control" name="sort" value="@Context.Request.Query["sort"]">
+            <select class="form-control" name="sort">
                 @{
-                    await SelectedOption("Newest first", "sort", "newest_first");
-                    await SelectedOption("Newest last", "sort", "newest_last");
+                    await SelectedOption("Newest first", "newest_first", Model.Sort);
+                    await SelectedOption("Newest last", "newest_last", Model.Sort);
                 }
             </select>
         </div>
         <div class="form-group col-sm">
             <select class="form-control" name="status">
                 @{
-                    await SelectedOption("All", "status", "");
-                    await SelectedOption("Open", "status", "open");
-                    await SelectedOption("In progress", "status", "in_progress");
-                    await SelectedOption("Resolved", "status", "resolved");
-                    await SelectedOption("Refused", "status", "refused");
+                    await SelectedOption("All", "", Model.Status);
+                    await SelectedOption("Open", "open", Model.Status);
+                    await SelectedOption("In progress", "in_progress", Model.Status);
+                    await SelectedOption("Resolved", "resolved", Model.Status);
+                    await SelectedOption("Refused", "refused", Model.Status);
                 }
             </select>
         </div>
@@ -72,7 +69,7 @@ else
         <div class="card">
             <div class="card-header">
                 <h2 class="mb-0 d-flex justify-content-between align-items-center">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target=@($"#item{report.ID}")>
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="@($"#item{report.ID}")">
                         @report.CreationDate @report.Title reported by @report.Author.UserName
                     </button>
                     @if (report.Status == ReportStatus.OPEN)
@@ -92,23 +89,30 @@ else
                         <span class="badge badge-pill badge-danger">Refused</span>
                     }
                     
-                    @await Html.PartialAsync("_DeleteReportPartial", new DeleteReportViewModel()
-                    {
-                        ID = report.ID
-                    })
+                    @await Html.PartialAsync("_DeleteReportPartial", new DeleteReportViewModel(
+                        report.ID,
+                        Model.Reports.PageIndex,
+                        Model.Search,
+                        Model.Sort,
+                        Model.Status,
+                        Model.Personal
+                    ))
                 </h2>
             </div>
-            <div id=@($"item{report.ID}") class="collapse" data-parent="#reportsAccordion">
+            <div id="@($"item{report.ID}")" class="collapse" data-parent="#reportsAccordion">
                 <div class="card-body">
                     @report.Description
 
-                    @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel()
-                    {
-                        ID = report.ID,
-                        Status = report.Status,
-                        Resolution = report.Resolution,
-                        Photo = report.Photo
-                    })
+                    @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel(
+                        report.ID,
+                        report.Status,
+                        report.Resolution,
+                        report.Photo,
+                        Model.Reports.PageIndex,
+                        Model.Search,
+                        Model.Sort,
+                        Model.Status
+                    ))
                 </div>
             </div>
         </div>
@@ -128,6 +132,7 @@ else
                 asp-route-search="@Model.Search"
                 asp-route-sort="@Model.Sort"
                 asp-route-status="@Model.Status"
+                asp-route-personal="@Model.Personal"
                 asp-controller="Reports"
                 asp-action="Reports">
                 Previous
@@ -140,6 +145,7 @@ else
                 asp-route-search="@Model.Search"
                 asp-route-sort="@Model.Sort"
                 asp-route-status="@Model.Status"
+                asp-route-personal="@Model.Personal"
                 asp-controller="Reports"
                 asp-action="Reports">
                 Next

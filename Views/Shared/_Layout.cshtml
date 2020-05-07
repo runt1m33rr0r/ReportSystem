@@ -46,8 +46,14 @@
                         <li class="nav-item">
                             <a class="nav-link @GetActive("Report")" asp-controller="Reports" asp-action="Report">Create a report</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link @GetActive("Reports")" asp-controller="Reports" asp-action="Reports">Reports</a>
+                        <li class="nav-item dropdown @GetActive("Reports")">
+                            <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">
+                                Reports
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-controller="Reports" asp-action="Reports">All</a>
+                                <a class="dropdown-item" asp-controller="Reports" asp-action="Reports" asp-route-personal="@true">My reports</a>
+                            </div>
                         </li>
                     </ul>
                 </div>

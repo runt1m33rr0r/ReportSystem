@@ -56,7 +56,12 @@ namespace ReportSystem.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Reports(int? page, string search, string sort, string status)
+        public async Task<IActionResult> Reports(
+            int? page,
+            string search,
+            string sort,
+            string status,
+            bool personal = false)
         {
             ReportStatus? statusFilter = null;
             if (!String.IsNullOrEmpty(status))
@@ -80,9 +85,14 @@ namespace ReportSystem.Controllers
 
             IQueryable<ReportViewModel> reports = this.reportsService.GetAll(
                 search,
-                sort == "newest_first",
+                sort == "newest_first" || sort == null,
                 statusFilter)
+                .Where(rep =>
+                    personal ?
+                    this.User.Identity.IsAuthenticated && rep.Author.UserName == this.User.Identity.Name :
+                    true)
                 .Select(x => this.mapper.Map<ReportViewModel>(x));
+
             int pageSize = 5;
             var pagedReports = await PaginatedList<ReportViewModel>.CreateAsync(
                 reports,
@@ -102,7 +112,8 @@ namespace ReportSystem.Controllers
                 Reports = pagedReports,
                 Search = !String.IsNullOrEmpty(search) ? search : "",
                 Sort = !String.IsNullOrEmpty(sort) ? sort : "newest_first",
-                Status = status
+                Status = status,
+                Personal = personal
             };
 
             return View("Reports", viewModel);
@@ -208,7 +219,8 @@ namespace ReportSystem.Controllers
                     deleteReportViewModel.Page,
                     deleteReportViewModel.Search,
                     deleteReportViewModel.Order,
-                    deleteReportViewModel.StatusFilter);
+                    deleteReportViewModel.StatusFilter,
+                    deleteReportViewModel.ShowPersonalReports);
             }
 
             ViewData["Success"] = "Report deleted!";
@@ -217,7 +229,8 @@ namespace ReportSystem.Controllers
                 deleteReportViewModel.Page,
                 deleteReportViewModel.Search,
                 deleteReportViewModel.Order,
-                deleteReportViewModel.StatusFilter);
+                deleteReportViewModel.StatusFilter,
+                deleteReportViewModel.ShowPersonalReports);
         }
     }
 }

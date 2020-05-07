@@ -16,5 +16,27 @@ namespace ReportSystem.Models
         public string Search { get; set; }
         public string Order { get; set; }
         public string StatusFilter { get; set; }
+
+        public ReportStatusViewModel() { }
+
+        public ReportStatusViewModel(
+            int id,
+            ReportStatus status,
+            string resolution,
+            byte[] photo,
+            int? page,
+            string search,
+            string order,
+            string statusFilter)
+        {
+            this.ID = id;
+            this.Status = status;
+            this.Resolution = resolution;
+            this.Photo = photo;
+            this.Page = page;
+            this.Search = search;
+            this.Order = order;
+            this.StatusFilter = statusFilter;
+        }
     }
 }
