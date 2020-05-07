@@ -58,9 +58,9 @@ namespace ReportSystem.Services
             return reports;
         }
 
-        public void SetReportStatus(int Id, ReportStatus status, string resolution)
+        public void SetReportStatus(int id, ReportStatus status, string resolution)
         {
-            Report report = this.repository.All.First(el => el.ID == Id);
+            Report report = this.repository.All.First(el => el.ID == id);
             if (report == null)
             {
                 throw new InvalidOperationException("Report does not exist!");
@@ -69,6 +69,18 @@ namespace ReportSystem.Services
             report.Status = status;
             report.Resolution = resolution;
             this.repository.Update(report);
+            this.context.Commit();
+        }
+
+        public void DeleteReport(int id)
+        {
+            Report report = this.repository.All.First(el => el.ID == id);
+            if (report == null)
+            {
+                throw new InvalidOperationException("Report does not exist!");
+            }
+
+            this.repository.Delete(report);
             this.context.Commit();
         }
     }

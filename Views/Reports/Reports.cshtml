@@ -30,6 +30,8 @@ else
 }
 
 <form class="mt-3" method="GET" asp-controller="Reports" asp-action="Reports">
+    <input type="hidden" name="page" value="@Context.Request.Query["page"]">
+
     <div class="form-row">
         <div class="form-group col-sm">
             <input 
@@ -64,12 +66,12 @@ else
     </div>
 </form>
 
-<div class="accordion mt-3" id="accordionExample">
+<div class="accordion mt-3" id="reportsAccordion">
     @foreach (ReportViewModel report in Model.Reports)
     {
         <div class="card">
             <div class="card-header">
-                <h2 class="mb-0">
+                <h2 class="mb-0 d-flex justify-content-between align-items-center">
                     <button class="btn btn-link" type="button" data-toggle="collapse" data-target=@($"#item{report.ID}")>
                         @report.CreationDate @report.Title reported by @report.Author.UserName
                     </button>
@@ -89,9 +91,14 @@ else
                     {
                         <span class="badge badge-pill badge-danger">Refused</span>
                     }
+                    
+                    @await Html.PartialAsync("_DeleteReportPartial", new DeleteReportViewModel()
+                    {
+                        ID = report.ID
+                    })
                 </h2>
             </div>
-            <div id=@($"item{report.ID}") class="collapse" data-parent="#accordionExample">
+            <div id=@($"item{report.ID}") class="collapse" data-parent="#reportsAccordion">
                 <div class="card-body">
                     @report.Description
 

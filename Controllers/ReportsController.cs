@@ -83,12 +83,20 @@ namespace ReportSystem.Controllers
                 sort == "newest_first",
                 statusFilter)
                 .Select(x => this.mapper.Map<ReportViewModel>(x));
-
             int pageSize = 5;
             var pagedReports = await PaginatedList<ReportViewModel>.CreateAsync(
                 reports,
                 page ?? 1,
                 pageSize);
+            while (pagedReports.Count == 0 && page > 0)
+            {
+                page -= 1;
+                pagedReports = await PaginatedList<ReportViewModel>.CreateAsync(
+                    reports,
+                    page ?? 1,
+                    pageSize);
+            }
+
             ReportListViewModel viewModel = new ReportListViewModel()
             {
                 Reports = pagedReports,
@@ -183,6 +191,33 @@ namespace ReportSystem.Controllers
                 reportStatus.Search,
                 reportStatus.Order,
                 reportStatus.StatusFilter);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteReport(DeleteReportViewModel deleteReportViewModel)
+        {
+            try
+            {
+                this.reportsService.DeleteReport(deleteReportViewModel.ID);
+            }
+            catch (InvalidOperationException ex)
+            {
+                ViewData["Error"] = ex.Message;
+
+                return await this.Reports(
+                    deleteReportViewModel.Page,
+                    deleteReportViewModel.Search,
+                    deleteReportViewModel.Order,
+                    deleteReportViewModel.StatusFilter);
+            }
+
+            ViewData["Success"] = "Report deleted!";
+
+            return await this.Reports(
+                deleteReportViewModel.Page,
+                deleteReportViewModel.Search,
+                deleteReportViewModel.Order,
+                deleteReportViewModel.StatusFilter);
         }
     }
 }
