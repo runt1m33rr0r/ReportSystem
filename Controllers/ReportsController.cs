@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ReportSystem.Data.Models;
@@ -57,11 +56,34 @@ namespace ReportSystem.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Reports(int? page)
+        public async Task<IActionResult> Reports(int? page, string search, string sort, string status)
         {
-            IQueryable<ReportViewModel> reports = this.reportsService
-                .GetAll()
+            ReportStatus? statusFilter = null;
+            if (!String.IsNullOrEmpty(status))
+            {
+                switch (status)
+                {
+                    case "open":
+                        statusFilter = ReportStatus.OPEN;
+                        break;
+                    case "in_progress":
+                        statusFilter = ReportStatus.IN_PROGRESS;
+                        break;
+                    case "resolved":
+                        statusFilter = ReportStatus.RESOLVED;
+                        break;
+                    default:
+                        statusFilter = ReportStatus.REFUSED;
+                        break;
+                }
+            }
+
+            IQueryable<ReportViewModel> reports = this.reportsService.GetAll(
+                search,
+                sort == "newest_first",
+                statusFilter)
                 .Select(x => this.mapper.Map<ReportViewModel>(x));
+
             int pageSize = 5;
             var pagedReports = await PaginatedList<ReportViewModel>.CreateAsync(
                 reports,
@@ -69,7 +91,10 @@ namespace ReportSystem.Controllers
                 pageSize);
             ReportListViewModel viewModel = new ReportListViewModel()
             {
-                Reports = pagedReports
+                Reports = pagedReports,
+                Search = !String.IsNullOrEmpty(search) ? search : "",
+                Sort = !String.IsNullOrEmpty(sort) ? sort : "newest_first",
+                Status = status
             };
 
             return View("Reports", viewModel);
@@ -126,7 +151,11 @@ namespace ReportSystem.Controllers
             {
                 ViewData["Error"] = "Invalid report status!";
 
-                return await this.Reports(reportStatus.Page);
+                return await this.Reports(
+                    reportStatus.Page,
+                    reportStatus.Search,
+                    reportStatus.Order,
+                    reportStatus.StatusFilter);
             }
 
             try
@@ -140,12 +169,20 @@ namespace ReportSystem.Controllers
             {
                 ViewData["Error"] = ex.Message;
 
-                return await this.Reports(reportStatus.Page);
+                return await this.Reports(
+                    reportStatus.Page,
+                    reportStatus.Search,
+                    reportStatus.Order,
+                    reportStatus.StatusFilter);
             }
 
             ViewData["Success"] = "Report updated!";
 
-            return await this.Reports(reportStatus.Page);
+            return await this.Reports(
+                reportStatus.Page,
+                reportStatus.Search,
+                reportStatus.Order,
+                reportStatus.StatusFilter);
         }
     }
 }

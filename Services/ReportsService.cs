@@ -30,6 +30,34 @@ namespace ReportSystem.Services
             return this.repository.All.Include(r => r.Author);
         }
 
+        public IQueryable<Report> GetAll(string search, bool sortAscending, ReportStatus? status)
+        {
+            var reports = this.GetAll();
+            if (sortAscending)
+            {
+                reports = reports.OrderBy(rep => rep.CreationDate);
+            }
+            else
+            {
+                reports = reports.OrderByDescending(rep => rep.CreationDate);
+            }
+
+            if (!String.IsNullOrEmpty(search) && !String.IsNullOrWhiteSpace(search))
+            {
+                reports = reports.Where(rep =>
+                    rep.Title.Contains(search) ||
+                    rep.Description.Contains(search) ||
+                    rep.Resolution.Contains(search));
+            }
+
+            if (status != null)
+            {
+                reports = reports.Where(rep => rep.Status == status);
+            }
+
+            return reports;
+        }
+
         public void SetReportStatus(int Id, ReportStatus status, string resolution)
         {
             Report report = this.repository.All.First(el => el.ID == Id);

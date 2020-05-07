@@ -3,6 +3,21 @@
 
 @{
     ViewData["Title"] = "Reports list";
+
+    async Task SelectedOption(string optionTitle, string queryOptionName, string checkOptionValue)
+    {
+        string optionValue = Context.Request.Query[queryOptionName];
+        optionValue = optionValue == null ? "" : optionValue;
+
+        if (optionValue == checkOptionValue)
+        {
+            <option value="@checkOptionValue" selected="selected">@optionTitle</option>
+        }
+        else
+        {
+            <option value="@checkOptionValue">@optionTitle</option>
+        }
+    }
 }
 
 @if (Model.Reports.Count == 0)
@@ -13,6 +28,37 @@ else
 {
     <h1 class="text-center">@ViewData["Title"]</h1>
 }
+
+<form class="form-inline mt-3" method="GET" asp-controller="Reports" asp-action="Reports">
+    <div class="form-group">
+        <input 
+            class="form-control" 
+            type="text" 
+            placeholder="Search criteria" 
+            name="search"
+            value="@Context.Request.Query["search"]">
+    </div>
+    <div class="form-group mx-sm-3">
+        <select class="form-control" name="sort" value="@Context.Request.Query["sort"]">
+            @{
+                await SelectedOption("Newest first", "sort", "newest_first");
+                await SelectedOption("Newest last", "sort", "newest_last");
+            }
+        </select>
+    </div>
+    <div class="form-group mr-sm-3">
+        <select class="form-control" name="status">
+            @{
+                await SelectedOption("All", "status", "");
+                await SelectedOption("Open", "status", "open");
+                await SelectedOption("In progress", "status", "in_progress");
+                await SelectedOption("Resolved", "status", "resolved");
+                await SelectedOption("Refused", "status", "refused");
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
 
 <div class="accordion mt-3" id="accordionExample">
     @foreach (ReportViewModel report in Model.Reports)
@@ -66,8 +112,11 @@ else
     <ul class="pagination">
         <li class="page-item @prevDisabled">
             <a 
-                class="page-link" 
+                class="page-link"
                 asp-route-page="@(Model.Reports.PageIndex - 1)"
+                asp-route-search="@Model.Search"
+                asp-route-sort="@Model.Sort"
+                asp-route-status="@Model.Status"
                 asp-controller="Reports"
                 asp-action="Reports">
                 Previous
@@ -77,6 +126,9 @@ else
             <a 
                 class="page-link" 
                 asp-route-page="@(Model.Reports.PageIndex + 1)"
+                asp-route-search="@Model.Search"
+                asp-route-sort="@Model.Sort"
+                asp-route-status="@Model.Status"
                 asp-controller="Reports"
                 asp-action="Reports">
                 Next

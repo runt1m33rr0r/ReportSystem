@@ -7,6 +7,7 @@ namespace ReportSystem.Services.Contracts
     {
         void CreateReport(Report report);
         IQueryable<Report> GetAll();
+        IQueryable<Report> GetAll(string search, bool sortAscending, ReportStatus? status);
         void SetReportStatus(int Id, ReportStatus status, string resolution);
     }
 }
