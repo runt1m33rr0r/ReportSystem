@@ -8,17 +8,6 @@
     <input type="hidden" asp-for="@Model.Order" value="@Model.Order" />
     <input type="hidden" asp-for="@Model.StatusFilter" value="@Model.StatusFilter" />
 
-    @if (Model.Photo != null && Model.Photo.Length > 0)
-    {
-        String img64 = Convert.ToBase64String(Model.Photo);
-        String img64Url = string.Format("data:image/png;base64,{0}", img64);
-
-        <div class="form-group">
-            <label for="photo">Photo</label>
-            <img id="photo" src="@img64Url" class="img-fluid" />
-        </div>
-    }
-
     <div class="form-group">
         <label asp-for="Resolution"></label>
         <textarea class="form-control" asp-for="@Model.Resolution" value="@Model.Resolution" rows="4"></textarea>
@@ -28,11 +17,6 @@
     <div class="form-group">
         <label asp-for="@Model.Status">State</label>
         <select class="form-control" asp-for="@Model.Status" value="@Model.Status">
-            @if (Model.Status != ReportStatus.OPEN)
-            {
-                <option value="@ReportStatus.OPEN">Open</option>
-            }
-
             @if (Model.Status != ReportStatus.IN_PROGRESS)
             {
                 <option value="@ReportStatus.IN_PROGRESS">In progress</option>

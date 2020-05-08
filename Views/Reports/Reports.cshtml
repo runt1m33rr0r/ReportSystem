@@ -115,6 +115,17 @@ else
                 <div class="card-body">
                     @report.Description
 
+                    @if (report.Photo != null && report.Photo.Length > 0)
+                    {
+                        String img64 = Convert.ToBase64String(report.Photo);
+                        String img64Url = string.Format("data:image/png;base64,{0}", img64);
+
+                        <div class="form-group mt-3">
+                            <label for="photo">Photo</label>
+                            <img id="photo" src="@img64Url" class="img-fluid d-block" />
+                        </div>
+                    }
+
                     @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Employee"))
                     {
                         @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel(
