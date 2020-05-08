@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ReportSystem.Controllers
 {
@@ -63,6 +64,11 @@ namespace ReportSystem.Controllers
             string status,
             bool personal = false)
         {
+            if (!this.User.Identity.IsAuthenticated || !this.User.IsInRole("User"))
+            {
+                personal = false;
+            }
+
             ReportStatus? statusFilter = null;
             if (!String.IsNullOrEmpty(status))
             {
@@ -120,6 +126,7 @@ namespace ReportSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> Report(ReportViewModel report)
         {
             if (!ModelState.IsValid)
@@ -164,6 +171,7 @@ namespace ReportSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> SetReportStatus(ReportStatusViewModel reportStatus)
         {
             if (!ModelState.IsValid)
@@ -205,6 +213,7 @@ namespace ReportSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> DeleteReport(DeleteReportViewModel deleteReportViewModel)
         {
             try

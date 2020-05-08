@@ -40,24 +40,35 @@
                         <li class="nav-item">
                             <a class="nav-link @GetActive("Index")" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link @GetActive("CreateAdmin")" asp-controller="Admin" asp-action="CreateAdmin">Create admin</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @GetActive("CreateEmployee")" asp-controller="Employees" asp-action="CreateEmployee">Create an employee</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @GetActive("Report")" asp-controller="Reports" asp-action="Report">Create a report</a>
-                        </li>
-                        <li class="nav-item dropdown @GetActive("Reports")">
-                            <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">
-                                Reports
-                            </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" asp-controller="Reports" asp-action="Reports">All</a>
-                                <a class="dropdown-item" asp-controller="Reports" asp-action="Reports" asp-route-personal="@true">My reports</a>
-                            </div>
-                        </li>
+
+                        @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @GetActive("CreateEmployee")" asp-controller="Employees" asp-action="CreateEmployee">Create an employee</a>
+                            </li>
+                        }
+
+                        @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("User"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @GetActive("Report")" asp-controller="Reports" asp-action="Report">Create a report</a>
+                            </li>
+                            <li class="nav-item dropdown @GetActive("Reports")">
+                                <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">
+                                    Reports
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-controller="Reports" asp-action="Reports">All</a>
+                                    <a class="dropdown-item" asp-controller="Reports" asp-action="Reports" asp-route-personal="@true">My reports</a>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @GetActive("Reports")" asp-controller="Reports" asp-action="Reports">Reports</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

@@ -80,6 +80,11 @@ namespace ReportSystem.Services
                 throw new InvalidOperationException("Report does not exist!");
             }
 
+            if (report.Status != ReportStatus.REFUSED)
+            {
+                throw new InvalidOperationException("Can't delete report that has not been refused!");
+            }
+
             this.repository.Delete(report);
             this.context.Commit();
         }

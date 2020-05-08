@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ReportSystem.Models;
@@ -6,6 +7,7 @@ using ReportSystem.Services.Contracts;
 
 namespace ReportSystem.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class EmployeesController : Controller
     {
         private readonly UserManager<IdentityUser> userManager;

@@ -84,7 +84,7 @@ namespace ReportSystem.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                const string roleName = "Client";
+                const string roleName = "User";
                 await _authService.CreateRole(roleName);
 
                 var user = new IdentityUser { UserName = Input.UserName, Email = Input.Email };

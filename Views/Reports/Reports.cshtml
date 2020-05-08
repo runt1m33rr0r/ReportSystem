@@ -2,8 +2,15 @@
 @using ReportSystem.Data.Models;
 
 @{
-    ViewData["Title"] = "Reports list";
-
+    if (Model.Personal == true)
+    {
+        ViewData["Title"] = "My reports";
+    }
+    else
+    {
+        ViewData["Title"] = "Reports list";
+    }
+    
     async Task SelectedOption(string optionTitle, string checkOptionValue, string modelValue)
     {
         if (modelValue == checkOptionValue)
@@ -89,30 +96,38 @@ else
                         <span class="badge badge-pill badge-danger">Refused</span>
                     }
                     
-                    @await Html.PartialAsync("_DeleteReportPartial", new DeleteReportViewModel(
-                        report.ID,
-                        Model.Reports.PageIndex,
-                        Model.Search,
-                        Model.Sort,
-                        Model.Status,
-                        Model.Personal
-                    ))
+                    @if (report.Status == ReportStatus.REFUSED &&
+                         this.User.Identity.IsAuthenticated && 
+                         this.User.IsInRole("User"))
+                    {
+                        @await Html.PartialAsync("_DeleteReportPartial", new DeleteReportViewModel(
+                            report.ID,
+                            Model.Reports.PageIndex,
+                            Model.Search,
+                            Model.Sort,
+                            Model.Status,
+                            Model.Personal
+                        ));
+                    }
                 </h2>
             </div>
             <div id="@($"item{report.ID}")" class="collapse" data-parent="#reportsAccordion">
                 <div class="card-body">
                     @report.Description
 
-                    @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel(
-                        report.ID,
-                        report.Status,
-                        report.Resolution,
-                        report.Photo,
-                        Model.Reports.PageIndex,
-                        Model.Search,
-                        Model.Sort,
-                        Model.Status
-                    ))
+                    @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Employee"))
+                    {
+                        @await Html.PartialAsync("_ReportStatusPartial", new ReportStatusViewModel(
+                            report.ID,
+                            report.Status,
+                            report.Resolution,
+                            report.Photo,
+                            Model.Reports.PageIndex,
+                            Model.Search,
+                            Model.Sort,
+                            Model.Status
+                        ));
+                    }
                 </div>
             </div>
         </div>

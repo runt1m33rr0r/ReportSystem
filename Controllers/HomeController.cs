@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using ReportSystem.Models;
 using ReportSystem.Services.Contracts;
 
@@ -12,13 +8,20 @@ namespace ReportSystem.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IAuthService authService;
+
+        public HomeController(IAuthService authService)
         {
-            return View();
+            this.authService = authService;
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Index()
         {
+            if (!(await this.authService.UserWithRoleExists("Admin")))
+            {
+                return RedirectToAction("CreateAdmin", "Admin");
+            }
+
             return View();
         }
 
