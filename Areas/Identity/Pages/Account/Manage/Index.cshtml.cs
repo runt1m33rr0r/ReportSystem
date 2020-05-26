@@ -83,12 +83,15 @@ namespace ReportSystem.Areas.Identity.Pages.Account.Manage
                 var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.UserName);
                 if (!setUserNameResult.Succeeded)
                 {
-                    throw new InvalidOperationException("Error during username change!");
+                    StatusMessage = setUserNameResult.Errors.First().Description;
+
+                    return RedirectToPage();
                 }
             }
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
+
             return RedirectToPage();
         }
     }

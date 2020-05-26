@@ -94,7 +94,15 @@ namespace ReportSystem.Areas.Identity.Pages.Account.Manage
                 var code = await _userManager.GenerateChangeEmailTokenAsync(user, Input.NewEmail);
                 var emailChange = await _userManager.ChangeEmailAsync(user, Input.NewEmail, code);
 
+                if (emailChange.Errors.Count() > 0)
+                {
+                    StatusMessage = emailChange.Errors.First().Description;
+
+                    return RedirectToPage();
+                }
+
                 StatusMessage = "Email changed!";
+
                 return RedirectToPage();
             }
 
