@@ -100,16 +100,17 @@ namespace ReportSystem.Controllers
                 .Select(x => this.mapper.Map<ReportViewModel>(x));
 
             int pageSize = 5;
+            int chosenPage = page ?? 1;
             var pagedReports = await PaginatedList<ReportViewModel>.CreateAsync(
                 reports,
-                page ?? 1,
+                chosenPage,
                 pageSize);
-            while (pagedReports.Count == 0 && page > 0)
+            if (pagedReports.Count == 0 && page > 0)
             {
-                page -= 1;
+                chosenPage = 1;
                 pagedReports = await PaginatedList<ReportViewModel>.CreateAsync(
                     reports,
-                    page ?? 1,
+                    chosenPage,
                     pageSize);
             }
 

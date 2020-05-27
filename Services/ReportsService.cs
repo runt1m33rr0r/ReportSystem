@@ -30,7 +30,7 @@ namespace ReportSystem.Services
             return this.repository.All.Include(r => r.Author);
         }
 
-        public IQueryable<Report> GetAll(string search, bool sortAscending, ReportStatus? status)
+        public IQueryable<Report> GetAll(string search = null, bool sortAscending = true, ReportStatus? status = null)
         {
             var reports = this.GetAll();
             if (sortAscending)
